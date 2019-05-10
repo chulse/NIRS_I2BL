@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+<html><body>
+<h1>MessageList</h1>
+<ul>
+    {% for msg in message %}
+    <li>{{  msg.date }}</li>
+    {% endfor %}
+</ul>
+</body></html>

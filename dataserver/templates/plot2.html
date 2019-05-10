@@ -1,0 +1,21 @@
+{% extends "index2.html" %}
+{% load static %}
+
+{% block title %}{{title}}{% endblock title %}
+
+{% block content %}
+{% autoescape off %}
+{{ content }}
+{% endautoescape %}
+<p>
+<table>
+    <tr>
+        <th>Unfiltered Output Voltage</th>
+    </tr>
+    <tr>
+        <td><div id="outputVoltageUnChart-container">{{ output_voutun|safe }}</div></td>
+    </tr>
+</table>
+Page last Update: {{last_updated|date:'D d F Y' }}
+</p>
+{% endblock content %}

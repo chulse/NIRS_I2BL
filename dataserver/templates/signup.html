@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" href="static/bootstrap.min.css">
+    <!-- Optional theme -->
+<link rel="stylesheet" href="static/css/bootstrap-theme.min.css">
+  <div class="row">
+    <h3>Signup</h3><hr/>
+    <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
+    {% include "fragments/signup_form.html" %}
+    </form>
+  </div>
+{% endblock %}

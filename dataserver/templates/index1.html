@@ -1,0 +1,20 @@
+{% extends "base_charts.html" %}<!-- Filename: app_name/templates/index.html -->
+<!DOCTYPE html>
+{% block content %}
+<html>
+
+<head>
+    {% load static %}
+    <script type="text/javascript" src="{% static "fusioncharts.js" %}"></script>
+    <script type="text/javascript" src="{% static "themes/fusioncharts.theme.fusion.js" %}"></script>
+
+</head>
+
+<body>
+<div class="row">
+    <div id="PD1R1-container">{{ output_pd1r1|safe }}</div>
+</div>
+</body>
+
+</html>
+{% endblock content %}
