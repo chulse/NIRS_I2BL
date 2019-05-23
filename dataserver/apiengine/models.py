@@ -22,7 +22,10 @@ class MessageModel(models.Model):
     pd2ir3 = models.TextField()
     pd3ir3 = models.TextField()
 
-    processedData = models.TextField()
+    processedData1 = models.TextField()
+    processedData2 = models.TextField()
+    processedData3 = models.TextField()
+    StO2 = models.TextField()
 
 
 class UserModel(models.Model):
