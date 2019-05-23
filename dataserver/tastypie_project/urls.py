@@ -9,6 +9,7 @@ from apiengine.views import MessageViewSet, MessageList
 from django.views.generic import TemplateView, RedirectView
 from django.contrib.auth import views as auth_views
 
+
 admin.autodiscover()
 message_resource = MessageModelResource()
 

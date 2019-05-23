@@ -40,22 +40,29 @@ class MessageViewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
+        request.data["processedData"]=int(request.data["pd1r1"])/int(request.data["pd2r2"])
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
 
 
-        print(request.data)
+        #print(request.data)
         #convert JSON data into a python dictionary
         data_dict = request.data
-        '''filename = str(data_dict["date"]) + "_" + str(data_dict["time"]) + ".txt";'''
+        '''filename = str(data_dict["date"]) + "_" + ".txt"''';#+ "_" + str(data_dict["time"]) + ".txt";
         filename = "infodata.txt"
         file=open("data/" + filename, "a+")
         file.write( str(data_dict["date"]) + ", "
-                    + str(data_dict["time"]) + "," + str(data_dict["vinput"]) + "," 
-                    + str(data_dict["voutunfiltered"]) + "," + str(data_dict["runfiltered"]) + "," 
-                    + str(data_dict["voutfiltered"]) + "," + str(data_dict["rfiltered"]) + "," 
-                    + str(data_dict["frequency"]) + "," + "\n") 
+                    + str(data_dict["pd1r1"]) + "," + str(data_dict["pd2r1"]) + "," 
+                    + str(data_dict["pd3r1"]) + "," + str(data_dict["pd1ir1"]) + "," 
+                    + str(data_dict["pd2ir1"]) + "," + str(data_dict["pd3ir1"]) + "," 
+                    + str(data_dict["pd1r2"]) + "," + str(data_dict["pd2r2"]) + "," 
+                    + str(data_dict["pd3r2"]) + "," + str(data_dict["pd1ir2"]) + "," 
+                    + str(data_dict["pd2ir2"]) + "," + str(data_dict["pd3ir2"]) + ","
+                    + str(data_dict["pd1r3"]) + "," + str(data_dict["pd2r3"]) + "," 
+                    + str(data_dict["pd3r3"]) + "," + str(data_dict["pd1ir3"]) + "," 
+                    + str(data_dict["pd2ir3"]) + "," + str(data_dict["pd3ir3"]) + ","
+                    + str(data_dict["processedData"]) + "," + "\n") 
         file.close()
         return Response({})
     
@@ -100,162 +107,4 @@ def PD1R1(request):
     return render(request, 'index1.html', {
         'output_pd1r1': pd1r1_line.render()
     })
-
-#####
-def inputVoltage(request):
-
-    #Chart data is passed to the `dataSource` parameter, like a dictionary in the form of key-value pairs.
-    dataSource = {}
-    dataSource['chart'] = { 
-        "caption": "Input Voltage",
-            "xAxisName": "Time",
-            "yAxisName": "Vin(V)",
-            "theme": "fusion",
-            "showvalues": "0",
-            "drawAnchors": "0"
-        }
-    dataSource['data'] = []
-
-    #Iterate through the data in `chartData` and insert into the `dataSource['data']` list.
-    for key in MessageModel.objects.all():
-        data = {}
-        data["label"] = key.time
-        data["value"] = key.vinput
-        dataSource["data"].append(data)
-
-
-# Create an object for the column 2D chart using the FusionCharts class constructor
-# The chart data is passed to the `dataSource` parameter.
-    vin_line = FusionCharts("line", "inputVoltageChart", "1000", "800", "inputVoltageChart-container", "json", dataSource)
-    return render(request, 'index1.html', {
-        'output_vin': vin_line.render()
-    })
-
-
-def VoutUnfiltered(request):
-
-    #Chart data is passed to the `dataSource` parameter, like a dictionary in the form of key-value pairs.
-    
-    dataSource = {}
-    dataSource['chart'] = { 
-        "caption": "Unfiltered Output Voltage",
-            "xAxisName": "Time",
-            "yAxisName": "Vout(V)",
-            "theme": "fusion",
-            "drawAnchors": "0",
-            "showvalues": "0"
-        }
-    dataSource['data'] = []
-
-    #Iterate through the data in `chartData` and insert into the `dataSource['data']` list.
-    for key in MessageModel.objects.all():
-        data = {}
-        data["label"] = key.time
-        data["value"] = key.voutunfiltered
-        dataSource["data"].append(data)
-
-
-# Create an object for the column 2D chart using the FusionCharts class constructor
-# The chart data is passed to the `dataSource` parameter.
-    voutun_line = FusionCharts("line", "outputVoltageUnChart", "1000", "800", "outputVoltageUnChart-container", "json", dataSource)
-    return render(request, 'index2.html', {
-        'output_voutun': voutun_line.render()
-    })
-
-
-def VoutFiltered(request):
-
-    #Chart data is passed to the `dataSource` parameter, like a dictionary in the form of key-value pairs.
-    
-    dataSource = {}
-    dataSource['chart'] = { 
-        "caption": "Filtered Output Voltage",
-            "xAxisName": "Time",
-            "yAxisName": "Vout(V)",
-            "theme": "fusion",
-            "drawAnchors": "0",
-            "showvalues": "0"
-        }
-    dataSource['data'] = []
-
-    #Iterate through the data in `chartData` and insert into the `dataSource['data']` list.
-    for key in MessageModel.objects.all():
-        data = {}
-        data["label"] = key.time
-        data["value"] = key.voutfiltered
-        dataSource["data"].append(data)
-
-
-# Create an object for the column 2D chart using the FusionCharts class constructor
-# The chart data is passed to the `dataSource` parameter.
-    vout_line = FusionCharts("line", "outputVoltageChart", "1000", "800", "outputVoltageChart-container", "json", dataSource)
-    return render(request, 'index3.html', {
-       'output_vout': vout_line.render()
-    })
-
-def resistanceUnfiltered(request):
-
-    #Chart data is passed to the `dataSource` parameter, like a dictionary in the form of key-value pairs.
-    
-    dataSource = {}
-    dataSource['chart'] = { 
-        "caption": "Unfiltered Resistance",
-            "xAxisName": "Time",
-            "yAxisName": "Resistance(Ohm)",
-            "theme": "fusion",
-            "showvalues": "0",
-            "drawAnchors": "0"
-        }
-    dataSource['data'] = []
-
-    #Iterate through the data in `chartData` and insert into the `dataSource['data']` list.
-    for key in MessageModel.objects.all():
-        data = {}
-        data["label"] = key.time
-        data["value"] = key.runfiltered
-        dataSource["data"].append(data)
-
-
-# Create an object for the column 2D chart using the FusionCharts class constructor
-# The chart data is passed to the `dataSource` parameter.
-    run_line = FusionCharts("line", "RUnChart", "1000", "800", "RUnChart-container", "json", dataSource)
-    return render(request, 'index4.html', {
-        'output_run': run_line.render()
-    })
-
-
-
-
-def resistanceFiltered(request):
-
-    #Chart data is passed to the `dataSource` parameter, like a dictionary in the form of key-value pairs.
-    
-    dataSource = {}
-    dataSource['chart'] = { 
-        "caption": "Filtered Resistance",
-            "xAxisName": "Time",
-            "yAxisName": "Resistance(Ohm)",
-            "theme": "fusion",
-            "showvalues": "0",
-            "drawAnchors": "0"
-        }
-    dataSource['data'] = []
-
-    #Iterate through the data in `chartData` and insert into the `dataSource['data']` list.
-    for key in MessageModel.objects.all():
-        data = {}
-        data["label"] = key.time
-        data["value"] = key.rfiltered
-        dataSource["data"].append(data)
-
-
-# Create an object for the column 2D chart using the FusionCharts class constructor
-# The chart data is passed to the `dataSource` parameter.
-    r_line = FusionCharts("line", "RChart", "1000", "800", "RChart-container", "json", dataSource)
-    return render(request, 'index5.html', {
-        'output_r': r_line.render()
-    })
-
-
-
 
