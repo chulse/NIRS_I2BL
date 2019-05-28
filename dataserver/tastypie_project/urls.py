@@ -24,7 +24,7 @@ urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^api/data', MessageList.as_view(), name='data'),
     url(r'^rest-auth/', include('rest_auth.urls')),
-    url(r'^plots/pd1r1/', views.PD1R1, name = 'pd1r1'),
+    url(r'^plots/StO2/', views.StO2, name = 'StO2'),
     #url(r'^plots/voutunfiltered/', views.VoutUnfiltered, name = 'voutunfiltered'),
     #url(r'^plots/voutfiltered/', views.VoutFiltered, name = 'voutfiltered'),
     #url(r'^plots/runfiltered/', views.resistanceUnfiltered, name = 'runfiltered'),

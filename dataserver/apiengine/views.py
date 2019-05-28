@@ -80,14 +80,14 @@ class MessageList(APIView):
 
 ####my func
 
-def PD1R1(request):
+def StO2(request):
 
     #Chart data is passed to the `dataSource` parameter, like a dictionary in the form of key-value pairs.
     dataSource = {}
     dataSource['chart'] = { 
-        "caption": "PD1R1",
-            "xAxisName": "Time",
-            "yAxisName": "PD1R1(units)",
+        "caption": "Tissue Oxygenation Visualization",
+            "xAxisName": "Time", "labeldisplay": "rotate",
+            "yAxisName": "StO2(units)",
             "theme": "fusion",
             "showvalues": "0",
             "drawAnchors": "0"
@@ -98,14 +98,14 @@ def PD1R1(request):
     for key in MessageModel.objects.all():
         data = {}
         data["label"] = key.date
-        data["value"] = key.pd1r1
+        data["value"] = key.StO2
         dataSource["data"].append(data)
 
 
 # Create an object for the column 2D chart using the FusionCharts class constructor
 # The chart data is passed to the `dataSource` parameter.
-    pd1r1_line = FusionCharts("line", "PD1R1Chart", "1000", "800", "PD1R1-container", "json", dataSource)
+    PPG_line = FusionCharts("line", "PPGChart", "1000", "800", "StO2-container", "json", dataSource)
     return render(request, 'index1.html', {
-        'output_pd1r1': pd1r1_line.render()
+        'output_StO2': PPG_line.render()
     })
 
