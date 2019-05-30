@@ -11,6 +11,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.renderers import AdminRenderer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.renderers import JSONRenderer
 # Include the `fusioncharts.py` file that contains functions to embed the charts.
 from fusioncharts import FusionCharts
 from rest_framework import generics
@@ -38,7 +39,8 @@ class MessageViewSet(viewsets.ModelViewSet):
     
     queryset = MessageModel.objects.all()
     serializer_class = MessageSerializer
-    renderer_classes = (AdminRenderer,)
+    #renderer_classes = (AdminRenderer,)
+    renderer_classes = (JSONRenderer, )
 
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -54,18 +56,19 @@ class MessageViewSet(viewsets.ModelViewSet):
         D2 = pData3-2*pData2+pData1 #D2(i,1)=(LEDData2(i,1)-2*LEDData1(i,1)+LEDData0(i,1));
         request.data["StO2"]=100*(-1.4*D2**3+4.82*D2**2-5.66*D2+2.38) #StO2(i,1)= 100*(-1.4*D2(i,1)^3+4.82*D2(i,1)^2-5.66*D2(i,1)+2.38);
 
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            #headers = self.get_success_headers(serializer.data)
 
 
-        #print(request.data)
-        #convert JSON data into a python dictionary
-        filename = "infodata.txt"
-        file=open("data/" + filename, "a+")
-        file.write( str(data_dict) + "," + "\n") 
-        file.close()
-        return Response({})
+            #print(request.data)
+            #convert JSON data into a python dictionary
+            filename = "infodata.txt"
+            file=open("data/" + filename, "a+")
+            file.write( str(data_dict) + "," + "\n") 
+            file.close()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
     
