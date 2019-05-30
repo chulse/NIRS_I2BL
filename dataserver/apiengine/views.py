@@ -45,29 +45,53 @@ class MessageViewSet(viewsets.ModelViewSet):
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
         data_dict = request.data
-        pData1 = math.log10(float(data_dict["pd1r1"])/float(data_dict["pd1ir1"]))#LEDData0(i,1)= log10(JONPD1_RED1(i,1)/JONPD1_IR1(i,1));
-        pData2 = math.log10(float(data_dict["pd2r2"])/float(data_dict["pd1ir2"]))#LEDData1(i,1)= log10(JONPD2_RED2(i,1)/JONPD1_IR2(i,1));
-        pData3 = math.log10(float(data_dict["pd3r3"])/float(data_dict["pd1ir3"]))#LEDData2(i,1)= log10(JONPD3_RED1(i,1)/JONPD1_IR3(i,1));
+        
+        #account for anything not measured
+        possibleEntries = {'date', 'pd1r1', 'pd2r1', 'pd3r1', 'pd1ir1', 'pd2ir1', 'pd3ir1', 'pd1r2', 'pd2r2', 'pd3r2', 'pd1ir2', 'pd2ir2', 'pd3ir2', 'pd1r3', 'pd2r3', 'pd3r3', 'pd1ir3', 'pd2ir3', 'pd3ir3','processedData1','processedData2','processedData3','StO2'}
+        for indx in possibleEntries:
+            data_dict[indx] = data_dict.get(indx,"N/A")
+        
+        if data_dict["mode"]=="STO2":
+            pData1 = math.log10(float(data_dict["pd2r1"])/float(data_dict["pd1ir1"]))#LEDData0(i,1)= log10(JONPD1_RED1(i,1)/JONPD1_IR1(i,1));
+            pData2 = math.log10(float(data_dict["pd2r2"])/float(data_dict["pd1ir2"]))#LEDData1(i,1)= log10(JONPD2_RED2(i,1)/JONPD1_IR2(i,1));
+            pData3 = math.log10(float(data_dict["pd2r3"])/float(data_dict["pd1ir3"]))#LEDData2(i,1)= log10(JONPD3_RED1(i,1)/JONPD1_IR3(i,1));
 
-        request.data["processedData1"]=pData1
-        request.data["processedData2"]=pData2
-        request.data["processedData3"]=pData3 # this willbe changed later but keep variable name the same to be used in StO2
+            request.data["processedData1"]=pData1
+            request.data["processedData2"]=pData2
+            request.data["processedData3"]=pData3 # this willbe changed later but keep variable name the same to be used in StO2
 
-        D2 = pData3-2*pData2+pData1 #D2(i,1)=(LEDData2(i,1)-2*LEDData1(i,1)+LEDData0(i,1));
-        request.data["StO2"]=100*(-1.4*D2**3+4.82*D2**2-5.66*D2+2.38) #StO2(i,1)= 100*(-1.4*D2(i,1)^3+4.82*D2(i,1)^2-5.66*D2(i,1)+2.38);
+            D2 = pData3-2*pData2+pData1 #D2(i,1)=(LEDData2(i,1)-2*LEDData1(i,1)+LEDData0(i,1));
+            StO2=100*(-1.4*D2**3+4.82*D2**2-5.66*D2+2.38) #StO2(i,1)= 100*(-1.4*D2(i,1)^3+4.82*D2(i,1)^2-5.66*D2(i,1)+2.38);
+            request.data["StO2"] = StO2
 
-        if serializer.is_valid():
-            self.perform_create(serializer)
-            #headers = self.get_success_headers(serializer.data)
+            if serializer.is_valid():
+                self.perform_create(serializer)
 
+                filename = "infodata.txt"
+                file=open("data/" + filename, "a+")
+                file.write( str(data_dict) + "," + "\n") 
+                file.close()
+               
 
-            #print(request.data)
-            #convert JSON data into a python dictionary
-            filename = "infodata.txt"
-            file=open("data/" + filename, "a+")
-            file.write( str(data_dict) + "," + "\n") 
-            file.close()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+                outDict = {"date":data_dict["date"],
+                "processedData1":pData1,
+                "processedData2":pData2,
+                "processedData3":pData3,
+                "StO2":StO2}
+                return Response(outDict, status=status.HTTP_201_CREATED)
+
+        if data_dict["mode"]=="PPG":            
+            if serializer.is_valid():
+                self.perform_create(serializer)
+
+                filename = "infodata.txt"
+                file=open("data/" + filename, "a+")
+                file.write( str(data_dict) + "," + "\n") 
+                file.close()
+            
+            outDict = {"date":data_dict["date"],
+            "ThisIsATestOutput":1231231}
+            return Response(outDict, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
@@ -99,10 +123,11 @@ def StO2(request):
 
     #Iterate through the data in `chartData` and insert into the `dataSource['data']` list.
     for key in MessageModel.objects.all():
-        data = {}
-        data["label"] = key.date
-        data["value"] = key.StO2
-        dataSource["data"].append(data)
+        if key.StO2!="N/A":
+            data = {}
+            data["label"] = key.date
+            data["value"] = key.StO2
+            dataSource["data"].append(data)
 
 
 # Create an object for the column 2D chart using the FusionCharts class constructor
