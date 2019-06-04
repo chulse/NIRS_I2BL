@@ -104,7 +104,7 @@ class MessageList(APIView):
     #permission_classes = (IsAuthenticated,) #forces user to be logged in to view data,
     #must send something like this; http http://127.0.0.1:8000/hello/ 'Authorization: Token 9054f7aa9305e012b3c2300408c3dfdf390fc"
     def get(self, request):
-        queryset = MessageModel.objects.filter(user=request.user.username) #filter by user here
+        queryset = MessageModel.objects.filter(user=request.user.getusername()) #filter by user here
         return Response({'message': queryset})
  
 
