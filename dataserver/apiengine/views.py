@@ -51,6 +51,8 @@ class MessageViewSet(viewsets.ModelViewSet):
         for indx in possibleEntries:
             data_dict[indx] = data_dict.get(indx,"N/A")
         
+        username = request.user.username
+        data_dict["user"] = username
         if data_dict["mode"]=="STO2":
             pData1 = math.log10(float(data_dict["pd2r1"])/float(data_dict["pd1ir1"]))#LEDData0(i,1)= log10(JONPD1_RED1(i,1)/JONPD1_IR1(i,1));
             pData2 = math.log10(float(data_dict["pd2r2"])/float(data_dict["pd1ir2"]))#LEDData1(i,1)= log10(JONPD2_RED2(i,1)/JONPD1_IR2(i,1));
@@ -99,9 +101,10 @@ class MessageViewSet(viewsets.ModelViewSet):
 class MessageList(APIView):
     renderer_classes = (TemplateHTMLRenderer,)
     template_name = 'message_list.html'
-
+    #permission_classes = (IsAuthenticated,) #forces user to be logged in to view data,
+    #must send something like this; http http://127.0.0.1:8000/hello/ 'Authorization: Token 9054f7aa9305e012b3c2300408c3dfdf390fc"
     def get(self, request):
-        queryset = MessageModel.objects.all()
+        queryset = MessageModel.objects.filter(user=request.user.username) #filter by user here
         return Response({'message': queryset})
  
 
