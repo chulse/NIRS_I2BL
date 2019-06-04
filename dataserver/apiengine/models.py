@@ -1,5 +1,10 @@
 from django.db import models
+from django.conf import settings
+
 class MessageModel(models.Model):
+
+    user = models.TextField() #just store their username
+
     date = models.CharField(max_length=125)
     pd1r1 = models.TextField()
     pd2r1 = models.TextField()

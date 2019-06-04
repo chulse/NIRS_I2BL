@@ -9,6 +9,7 @@ from apiengine.views import MessageViewSet, MessageList
 from django.views.generic import TemplateView, RedirectView
 from django.contrib.auth import views as auth_views
 
+from rest_framework.authtoken.views import obtain_auth_token  #this will be used by android device to authenticate
 
 admin.autodiscover()
 message_resource = MessageModelResource()
@@ -58,4 +59,6 @@ urlpatterns = [
     url(r'^password-reset/confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
         TemplateView.as_view(template_name="password_reset_confirm.html"),
         name='password_reset_confirm'),
+
+    url(r'^api-token-auth/', obtain_auth_token, name='api_token_auth'), #here is the url for http request from android device to receive token.
 ]
